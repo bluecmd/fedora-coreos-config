@@ -44,7 +44,7 @@ packages:
   # https://github.com/coreos/fedora-coreos-tracker/issues/400
   - fedora-repos-archive
   # Include and set the default editor
-  - vim vim-default-editor
+  - vim-minimal vim-default-editor
 
 etc-group-members:
   # Add the docker group to /etc/group

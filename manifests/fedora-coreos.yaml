@@ -43,14 +43,8 @@ packages:
   # the archive repo for more reliable package layering
   # https://github.com/coreos/fedora-coreos-tracker/issues/400
   - fedora-repos-archive
-  # CL ships this.
-  - moby-engine
-  # Already pulled in by moby-engine, but let's be explicit. Typhoon uses it.
-  - containerd
-  # Updates
-  - zincati
   # Include and set the default editor
-  - nano nano-default-editor
+  - vim vim-default-editor
 
 etc-group-members:
   # Add the docker group to /etc/group
@@ -62,32 +56,6 @@ etc-group-members:
 # ⚠⚠⚠ ONLY TEMPORARY HACKS ALLOWED HERE; ALL ENTRIES NEED TRACKER LINKS ⚠⚠⚠
 # See also the version of this in fedora-coreos-base.yaml
 postprocess:
-  # Disable Zincati on non-release builds
-  # https://github.com/coreos/fedora-coreos-tracker/issues/212
-  - |
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    source /etc/os-release
-    if [[ $OSTREE_VERSION = *.dev* ]]; then
-      mkdir -p /etc/zincati/config.d
-      echo -e '# https://github.com/coreos/fedora-coreos-tracker/issues/212\nupdates.enabled = false' > /etc/zincati/config.d/95-disable-on-dev.toml
-    fi
-  # Users shouldn't be configuring `rpm-ostreed.conf`
-  # https://github.com/coreos/fedora-coreos-tracker/issues/271
-  - |
-    #!/usr/bin/env bash
-    set -xeuo pipefail
-    cat > /tmp/rpm-ostreed.conf << 'EOF'
-    # By default, this system has its OS updates managed by
-    # `zincati.service`.  Changes made to this file may
-    # conflict with the configuation of `zincati.service`.
-    # See https://github.com/coreos/zincati for additional
-    # information.
-
-    EOF
-    cat /usr/etc/rpm-ostreed.conf >> /tmp/rpm-ostreed.conf
-    cp /tmp/rpm-ostreed.conf /usr/etc/rpm-ostreed.conf
-    rm /tmp/rpm-ostreed.conf
   # Make sure that we do not ship broken symlinks:
   # https://github.com/coreos/fedora-coreos-config/issues/1782
   # Remove known broken symlinks that point to non-existing files or directories:
